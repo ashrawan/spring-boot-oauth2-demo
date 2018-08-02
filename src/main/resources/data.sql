@@ -1,0 +1,1 @@
+INSERT INTO `user` (`user_id`, `full_name`, `password`, `status`, `username`, `role`) VALUES (null, 'admin test', '$2a$10$Hy2bguvDAPzvjPNBoa0RquocYH17iNatSpw1yjH80rMDg/BlMVFrq', '1', 'admin', 'ROLE_ADMIN');
