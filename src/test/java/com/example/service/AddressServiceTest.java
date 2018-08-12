@@ -49,6 +49,13 @@ public class AddressServiceTest {
         Assert.assertEquals(addressServiceImpl.getAllAddresss(),addressList);
     }
 
+    @Test(expected = DataNotFoundException.class)
+    public void getAll_whenAddressListIsNullOrSizeIsZero_thenReturnDataNotFoundExcetion(){
+
+        when(addressRepository.findAll()).thenReturn(null);
+        addressServiceImpl.getAllAddresss();
+    }
+
     @Test
     public void getAddressById_thenResultAddress() {
 
@@ -57,12 +64,24 @@ public class AddressServiceTest {
         Assert.assertEquals(address, addressServiceImpl.getAddressById(1L));
     }
 
+    @Test(expected = DataNotFoundException.class)
+    public void getByAddressId_whenAddressIdIsNull_thenReturnDataNotFoundException(){
+
+        addressServiceImpl.getAddressById(null);
+    }
+
     @Test
     public void addAddress_thenResultAddress(){
 
         LOGGER.info("Test Create Address");
         when(addressRepository.save(address)).thenReturn(address);
         Assert.assertEquals(addressServiceImpl.createAddress(address), address);
+    }
+
+    @Test(expected = DataNotFoundException.class)
+    public void addAddress_whenAddressIsNull_thenReturnDataNotFoundException() {
+
+        addressServiceImpl.createAddress(null);
     }
 
     @Test
@@ -74,6 +93,12 @@ public class AddressServiceTest {
         Assert.assertTrue(addressServiceImpl.updateAddress(address,address.getId()));
     }
 
+    @Test(expected = DataNotFoundException.class)
+    public void updateAddress_whenGetAddressByIdIsNull_thenReturnDataNotFoundException(){
+
+        addressServiceImpl.updateAddress(address,null);
+    }
+
     @Test
     public void deleteAddress_thenResultTrue(){
 
@@ -83,38 +108,10 @@ public class AddressServiceTest {
         Assert.assertTrue(addressServiceImpl.deleteAddress(address.getId()));
     }
 
-    // --------- Failure Testing --------------
-
-    @Test(expected = DataNotFoundException.class)
-    public void getAll_whenAddressListIsNullOrSizeIsZero_thenReturnDataNotFoundExcetion(){
-
-        when(addressRepository.findAll()).thenReturn(null);
-        addressServiceImpl.getAllAddresss();
-    }
-
-    @Test(expected = DataNotFoundException.class)
-    public void getByAddressId_whenAddressIdIsNull_thenReturnDataNotFoundException(){
-
-        addressServiceImpl.getAddressById(null);
-    }
-
-    @Test(expected = DataNotFoundException.class)
-    public void addAddress_whenAddressIsNull_thenReturnDataNotFoundException() {
-
-        addressServiceImpl.createAddress(null);
-    }
-
-    @Test(expected = DataNotFoundException.class)
-    public void updateAddress_whenGetAddressByIdIsNull_thenReturnDataNotFoundException(){
-
-        addressServiceImpl.updateAddress(address,null);
-    }
-
     @Test(expected = DataNotFoundException.class)
     public void deleteAddress_whenAddressIsNull_thenReturnDataNotFoundException(){
 
         addressServiceImpl.deleteAddress(null);
     }
-
 
 }

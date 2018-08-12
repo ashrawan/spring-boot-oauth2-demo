@@ -2,6 +2,8 @@ package com.example.demo1.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -17,9 +19,13 @@ public class Address {
     private long id;
 
     @Column
+    @NotNull(message = "district must be specified")
+    @Size(min = 2, max = 50, message = "district name must be between 2 and 50.")
     private String district;
 
     @Column
+    @NotNull(message = "city must be specified")
+    @Size(min = 2, max = 50, message = "city must be between 2 and 50.")
     private String city;
 
     @Enumerated(EnumType.STRING)

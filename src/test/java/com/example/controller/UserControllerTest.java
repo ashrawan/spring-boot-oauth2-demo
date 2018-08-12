@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.Arrays;
 
@@ -64,14 +65,35 @@ public class UserControllerTest {
     }
 
     @Test
+    public void allAddress_whenThereIsNoAddressInTable_thenReturnStatus_NOT_FOUND() throws Exception{
+
+        given(userService.getAllUsers()).willReturn(null);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/rest/users").contentType(MediaType.APPLICATION_JSON);
+        MvcResult result = mvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
+    }
+
+    @Test
     public void getUserBydId_thenReturnStatusOK() throws Exception {
 
         given(userService.getUserById(ID)).willReturn(user);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/rest/users/1")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/rest/users/"+ID)
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
         Assert.assertEquals(HttpStatus.OK.value(), response.getStatus());
+    }
+
+    @Test
+    public void getUserById_whenThereisNoSuchUserInTable_thenReturnStatus_NOT_FOUND() throws Exception {
+
+        given(userService.getUserById(1L)).willReturn(null);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/rest/users/"+ID)
+                .contentType(MediaType.APPLICATION_JSON);
+        MvcResult result = mvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
     }
 
     @Test
@@ -110,7 +132,7 @@ public class UserControllerTest {
         given(userService.updateUser(user, ID)).willReturn(true);
 
         // used to prepare the request.
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/rest/users/1")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/rest/users/"+ID)
                 .accept(MediaType.APPLICATION_JSON).content(jsonString).contentType(MediaType.APPLICATION_JSON);
 
         // perform a request and return the result of the executed request for direct access to the results.
@@ -128,44 +150,11 @@ public class UserControllerTest {
     }
 
     @Test
-    public void deleteUser_thenReturnStatusOK() throws Exception {
-        given(userService.deleteUser(ID)).willReturn(true);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/rest/users/1")
-                .contentType(MediaType.APPLICATION_JSON);
-        MvcResult result = mvc.perform(requestBuilder).andReturn();
-        MockHttpServletResponse response = result.getResponse();
-        String outputInJson = response.getContentAsString();
-        Boolean b = Boolean.parseBoolean(outputInJson);
-        Assert.assertTrue(b);
-    }
-
-    @Test
-    public void allAddress_whenThereIsNoAddressInTable_thenReturnStatus_NOT_FOUND() throws Exception{
-
-        given(userService.getAllUsers()).willReturn(null);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/rest/users").contentType(MediaType.APPLICATION_JSON);
-        MvcResult result = mvc.perform(requestBuilder).andReturn();
-        MockHttpServletResponse response = result.getResponse();
-        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
-    }
-
-    @Test
-    public void getUserById_whenThereisNoSuchUserInTable_thenReturnStatus_NOT_FOUND() throws Exception {
-
-        given(userService.getUserById(1L)).willReturn(null);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/rest/users/1")
-                .contentType(MediaType.APPLICATION_JSON);
-        MvcResult result = mvc.perform(requestBuilder).andReturn();
-        MockHttpServletResponse response = result.getResponse();
-        Assert.assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatus());
-    }
-
-    @Test
     public void updateUser_whenThereIsNoSuchRecordInUserTable_thenReturnStatus_CONFLICT()throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = mapper.writeValueAsString(user);
         given(userService.updateUser(user, ID)).willReturn(false);
-        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/rest/users/1")
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.put("/rest/users/"+ID)
                 .accept(MediaType.APPLICATION_JSON).content(jsonString).contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse response = result.getResponse();
@@ -173,6 +162,18 @@ public class UserControllerTest {
         Boolean b = Boolean.parseBoolean(outputInJson);
         Assert.assertFalse(b);
         Assert.assertEquals(HttpStatus.CONFLICT.value(), response.getStatus());
+    }
+
+    @Test
+    public void deleteUser_thenReturnStatusOK() throws Exception {
+        given(userService.deleteUser(ID)).willReturn(true);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/rest/users/"+ID)
+                .contentType(MediaType.APPLICATION_JSON);
+        MvcResult result = mvc.perform(requestBuilder).andReturn();
+        MockHttpServletResponse response = result.getResponse();
+        String outputInJson = response.getContentAsString();
+        Boolean b = Boolean.parseBoolean(outputInJson);
+        Assert.assertTrue(b);
     }
 
     @Test

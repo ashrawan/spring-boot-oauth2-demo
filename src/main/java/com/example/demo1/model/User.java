@@ -3,8 +3,8 @@ package com.example.demo1.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -21,18 +21,19 @@ public class User {
     private Long id;
 
     @Column
-    @NotBlank(message = "This field is required.")
-    @Size(min = 2, max = 50, message = "full name must be between 2 and 50.")
+    @NotNull(message="fullName must be specified.")
+    @Size(min = 2, max = 50, message = "fullName must be between 2 and 50.")
     private String fullName;
 
 
     @Column(unique = true)
-    @NotBlank(message = "This field is required.")
-    @Size(min = 2, max = 50, message = "username name must be between 2 and 50.")
+    @NotNull(message="username must be specified.")
+    @Size(min = 2, max = 50, message = "username must be between 2 and 50.")
     private String username;
 
     @Column
-    @NotBlank(message = "This field is required.")
+    @NotNull(message="password must be specified.")
+    @Size(min = 2, max = 50, message = "password must be between 2 and 50.")
     private String password;
 
     @Column

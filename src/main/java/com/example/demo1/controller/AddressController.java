@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -52,7 +53,7 @@ public class AddressController {
     }
     
     @PostMapping("/address")
-    public ResponseEntity<Address> createAddress(@RequestBody Address address) {
+    public ResponseEntity<Address> createAddress(@RequestBody @Valid Address address) {
 
         Address addressRe = addressService.createAddress(address);
         if(addressRe == null ){
@@ -63,7 +64,7 @@ public class AddressController {
     }
 
     @PutMapping("/address/{id}")
-    public ResponseEntity<Boolean> updateAddress(@RequestBody Address address, @PathVariable long id) {
+    public ResponseEntity<Boolean> updateAddress(@RequestBody @Valid Address address, @PathVariable long id) {
 
         boolean b=addressService.updateAddress(address, id);
         if(b==false){

@@ -8,8 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,7 +51,6 @@ public class UserController {
     }
 
 
-
     /**
      * Returns single user.
      * Http Get Method must be specified.
@@ -77,7 +81,7 @@ public class UserController {
      * @return Created user in JSON format
      */
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
 
         User userRe = userService.createUser(user);
         if(userRe == null ){
@@ -97,7 +101,7 @@ public class UserController {
      * @return Created user in JSON format
      */
     @PutMapping("/rest/users/{id}")
-    public ResponseEntity<Boolean> updateUser(@RequestBody User user, @PathVariable long id) {
+    public ResponseEntity<Boolean> updateUser(@RequestBody @Valid User user, @PathVariable long id) {
 
         boolean b=userService.updateUser(user, id);
         if(b==false){

@@ -4,13 +4,10 @@ import com.example.demo1.exception.DataNotFoundException;
 import com.example.demo1.model.User;
 import com.example.demo1.repository.UserRepository;
 import com.example.demo1.service.UserService;
-import netscape.security.Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -40,7 +37,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findOneByUsername(username);
-        if(user == null){
+        if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), getAuthority(user));
@@ -55,8 +52,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public List<User> getAllUsers() {
 
+
         List<User> userList = userRepository.findAll();
-        if(userList == null){
+        if (userList == null) {
             throw new DataNotFoundException("cannot find users");
         }
         return userList;
@@ -64,12 +62,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User getUserById(Long id) {
-
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String currentPrincipalName = authentication.getName();
-//        System.out.println("Current Principal  Name: " + currentPrincipalName);
-//        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-//        System.out.println("User has authorities: " + userDetails.toString());
 
         if (id == null) {
             throw new DataNotFoundException("cannot find user");
@@ -84,9 +76,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public User createUser(User user) {
-        if (user == null) {
-            throw new DataNotFoundException("cannot create user");
+        if(user == null){
+            throw new DataNotFoundException("user data is empty");
         }
+        User userByUsername = userRepository.findOneByUsername(user.getUsername());
+        if (userByUsername != null ) {
+            throw new DataNotFoundException("username already exists");
+        }
+
         user.setRole(User.USER_ROLE.ROLE_USER);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
@@ -94,10 +91,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public boolean updateUser(User user, Long id) {
-
-        if (user == null || id == null) {
-            throw new DataNotFoundException("cannot update user");
-        }
 
         Optional<User> user1 = userRepository.findById(id);
         if (!user1.isPresent()) {
@@ -112,9 +105,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public boolean deleteUser(Long id) {
-        if (id == null) {
-            throw new DataNotFoundException("cannot delete user");
-        }
+
         Optional<User> user = userRepository.findById(id);
         if (!user.isPresent()) {
             throw new DataNotFoundException("cannot delete user");
@@ -122,4 +113,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.delete(user.get());
         return true;
     }
+
 }
